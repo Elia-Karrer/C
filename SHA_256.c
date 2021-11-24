@@ -100,6 +100,6 @@ void sha256(char *s, int len)
 
 int main()
 {
-    char input[] = "a";
+    const char input[] = "a";
     sha256(&input[0], strlen(input));
 }
