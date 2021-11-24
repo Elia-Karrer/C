@@ -49,9 +49,7 @@ void sha256(char *s)
     //Copy string to blocks
     for(i = 0; i < blocklen; i++)
         for(j = 0; j < (a[i].content / 8); j++)
-            for(x = 0; x < 4; x++)
-                if(j % 4 == x)
-                    a[i].b[j/4] += (x == 3) ? s[i*64+j] : (s[i*64+j] * (1 << (24 - (x*8))));
+            a[i].b[j/4] += ((j%4) == 3) ? s[i*64+j] : (s[i*64+j] * (1 << (24 - ((j%4)*8))));
 
     //Padding bit
     x = a[blocklen-1].content;
