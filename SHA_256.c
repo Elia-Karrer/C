@@ -25,6 +25,7 @@ struct Block
     WRD content;
 };
 
+
 void sha256(char *s)
 {
     int i, j, n, x, blocklen, len = strlen(s);
