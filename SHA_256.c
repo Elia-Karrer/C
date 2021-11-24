@@ -98,5 +98,5 @@ void sha256(char *s)
 
 int main()
 {
-    sha256("a");
+    sha256("TEXT TO HASH");
 }
