@@ -29,7 +29,7 @@ const WRD cons[64] = {0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b
 void sha256(char *s)
 {
     int i, j, n, x, blocklen, len = strlen(s);
-    WRD out[8], bb[8];
+    WRD out[8], bb[8], T1, T2;
 
     //Calculate blocklength
     blocklen = ((len*8 + 64) % 512 == 0) ? ((len*8 + 64) / 512) : (((len*8 + 64) + (512-((len*8 + 64) % 512))) / 512);
@@ -72,7 +72,6 @@ void sha256(char *s)
     }
 
     //Core
-    WRD T1, T2;
     for(i = 0; i < blocklen; i++)
     {
         for(n = 0; n < 64; n++)
@@ -99,5 +98,5 @@ void sha256(char *s)
 
 int main()
 {
-    sha256("TEXT TO HASH");
+    sha256("a");
 }
