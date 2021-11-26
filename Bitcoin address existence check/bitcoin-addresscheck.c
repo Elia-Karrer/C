@@ -1,9 +1,8 @@
 /**
     Bitcoin / Bitcoin Cash / Dogecoin - Address existence checker
-    All rights reserved
     Elia Karrer, 2021
-
-    My BTC address:
+    
+    The code is free to use, but anyways, here's my BTC address:
     1ELiK2BCxEfZNRHAr7rkXwQ9AY7Lz1MEJv
 **/
 
