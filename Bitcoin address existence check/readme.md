@@ -1,2 +1,3 @@
-A program written in pure C, to check if a Bitcoin address exists or not.\
+Check if a Bitcoin address exists or not.\
+written in pure C.\
 (also works for Dogecoin and Bitcoin-Cash)
