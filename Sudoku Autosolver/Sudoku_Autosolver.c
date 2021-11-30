@@ -12,7 +12,6 @@
 
 typedef unsigned char byte;
 typedef struct Line line;
-
 struct Line {byte a[9];};
 
 void input_field(byte *);
