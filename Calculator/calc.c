@@ -12,7 +12,6 @@ typedef struct Variable {
 
     int i;
     float f;
-
 } var_t;
 
 
