@@ -1,29 +1,79 @@
 /**
-    Calculator, possible operators: +, -, *, /, %, ^
     All rights reserved, Elia Karrer
+    Calculator, possible operators: +, -, *, /, %, ^
+    Brackets not supported yet...
 */
 
 #include <stdio.h>
 
 
+typedef struct Variable {
+    char type;
+
+    int i;
+    float f;
+
+} var_t;
+
+
+void var_setInt(var_t *var, int value)
+{
+    var -> i = value;
+    var -> type = 'i';
+}
+
+
+void var_setFloat(var_t *var, float value)
+{
+    var -> f = value;
+    var -> type = 'f';
+}
+
+
+void var_print(var_t *var)
+{
+    ///Get data type
+    char type = var -> type;
+
+    ///Print variable with right data type
+    if(type == 'i')
+    {
+        printf("%d", var -> i);
+        return;
+    }
+    if(type == 'f')
+    {
+        printf("%f", var -> f);
+        return;
+    }
+
+    printf("Error -> var_print, can't print variable without data type");
+}
+
+
 unsigned int len(const char * str)
 {
     int i;
+
     for(i = 0; str[i] != 0; i++);
     return i;
 }
 
+
 void copyString(const char * src, char * dest)
 {
     int i, l = len(src);
+
     for(i = 0; i < l; i++)
         dest[i] = src[i];
     dest[l] = 0;
 }
 
+
 int stringContains(const char * str, const char * set)
 {
     int i, j, l = len(str), ll = len(set);
+
     for(i = 0; i < l; i++)
         for(j = 0; j < ll; j++)
             if(str[i] == set[j])
@@ -31,22 +81,27 @@ int stringContains(const char * str, const char * set)
     return 0;
 }
 
+
 int charInSet(const char a, const char * set)
 {
     int i, l = len(set);
+
     for(i = 0; i < l; i++)
         if(set[i] == a)
             return 1;
     return 0;
 }
 
+
 void shiftStringLeft(char * str)
 {
     int i, l = len(str);
+
     for(i = 0; i < l-1; i++)
         str[i] = str[i+1];
     str[l-1] = 0;
 }
+
 
 void removeSpaces(char * input)
 {
@@ -65,6 +120,7 @@ void removeSpaces(char * input)
     input[c] = 0;
 }
 
+
 char getLowerChr(const char chr)
 {
     if(chr > 64 && chr < 90)
@@ -72,32 +128,39 @@ char getLowerChr(const char chr)
     return chr;
 }
 
+
 void lowerStr(char * str)
 {
     int i, l = len(str);
+
     for(i = 0; i < l; i++)
         str[i] = getLowerChr(str[i]);
 }
+
 
 int getIntFromHexChar(const char chr)
 {
     int i;
     const char * table = "0123456789abcdef";
+
     for(i = 0; i < 16; i++)
         if(getLowerChr(chr) == table[i])
             return i;
     return -1;
 }
 
+
 int getIntFromChar(const char chr)
 {
     int i;
     const char * table = "0123456789";
+
     for(i = 0; i < 10; i++)
         if(chr == table[i])
             return i;
     return -1;
 }
+
 
 int getIntFromBinChar(const char chr)
 {
@@ -107,6 +170,7 @@ int getIntFromBinChar(const char chr)
         return 1;
     return -1;
 }
+
 
 int getIntFromHexStr(const char * str)
 {
@@ -120,17 +184,65 @@ int getIntFromHexStr(const char * str)
     return ret;
 }
 
-/*
+
 float getFloatFromStr(const char * s)
 {
+    char buf1[16] = {0}, buf2[16] = {0};
+    int i, temp, l = len(s), divisor = 10;
+    float result = 0, currentDigit;
 
+    ///If float number is an integer
+    if(stringContains(s, ".") == 0)
+        return (float) getIntFromStr(s);
+
+    if(s[0] != '.')
+    {
+        for(i = 0; i < l && i < 16; i++)
+        {
+            if(s[i] == '.')
+            {
+                buf1[i] = 0;
+                break;
+            }
+
+            buf1[i] = s[i];
+        }
+        temp = i+1;
+        for(i = 0; i < l && i < 16; i++)
+            buf2[i] = s[i+temp];
+        buf2[i] = 0;
+    }
+    ///If "0.f" is written as ".f"
+    else
+    {
+        buf1[0] = '0';
+        for(i = 1; i < l && i < 16; i++)
+            buf2[i-1] = s[i];
+        buf2[i-1] = 0;
+    }
+
+    ///Add integer part
+    result += (float) getIntFromStr(buf1);
+
+    ///Add decimal part
+    for(i = 0; ; i++)
+    {
+        if(buf2[i] == 0)
+            break;
+        currentDigit = (float) getIntFromChar(buf2[i]);
+        result += currentDigit / divisor;
+        divisor *= 10;
+    }
+
+    return result;
 }
-*/
+
 
 int getIntFromStr(const char * s)
 {
     char str[len(s)];
     copyString(s, str);
+
     ///CHECK FOR HEX NOTATION
     if(len(str) > 2)
         if(str[0] == '0' && str[1] == 'x')
@@ -156,6 +268,7 @@ int getIntFromStr(const char * s)
     return ret;
 }
 
+
 int getIntFromBinStr(char * str)
 {
     int i, mult = 1, l = len(str), ret = 0;
@@ -169,32 +282,12 @@ int getIntFromBinStr(char * str)
     return ret;
 }
 
+
 char getDtypeOfNumber(char *str)
 {
-    int i, l = len(str), dot = 0, number = 0;
-    for(i = 0; i < l; i++)
-    {
-        ///If number
-        if(getIntFromChar(str[i]) != -1)
-        {
-            number = 1;
-            continue;
-        }
-        ///If dot
-        if(str[i] == '.')
-        {
-            if(dot)
-                return 'E';
-            dot = 1;
-            continue;
-        }
-        return 'E';
-    }
-    if(dot == 0)
-        return 'i';
-    else
-        return 'f';
+    return stringContains(str, ".") ? 'f' : 'i';
 }
+
 
 void intToString(int num, char * dest)
 {
@@ -216,9 +309,28 @@ void intToString(int num, char * dest)
         dest[i] = tmp[l-i-1];
 }
 
+
 int power(int base, int exponent)
 {
-    int result = base;
+    int i, result = base;
+
+    if(exponent == 0)
+        return 1;
+    if(exponent == 1)
+        return base;
+
+    for(i = 0; i < exponent-1; i++)
+        result *= base;
+
+    if(exponent < 0)
+        return 1 / result;
+    return result;
+}
+
+
+float floatPower(float base, int exponent)
+{
+    float result = base;
 
     if(exponent == 0)
         return 1;
@@ -233,21 +345,32 @@ int power(int base, int exponent)
     return result;
 }
 
-int calculateSimple(char * input)
+
+int hasDecimals(float x)
+{
+    if(x == ((int) x))
+        return 0;
+    return 1;
+}
+
+
+var_t calculateSimple(char * input)
 {
     char parts[64*16] = {0};
     int i, j, n, l = len(input);
+    var_t result;
 
     ///parts[ctr*16 + chrctr]
     int ctr = 0, chrctr = 0;
 
     ///Checks if string starts with
     ///"n..." or "+..." or "-..."
-    ///if not -> Error
     if(getIntFromChar(input[0]) == -1 && input[0] != '-' && input[0] != '+')
     {
         printf("Error -> calculateSimple, char[0] = '%c'\n", input[0]);
-        return 0;
+        result.type = 'i';
+        result.i = 0;
+        return result;
     }
 
     ///Copy string to parts
@@ -278,7 +401,9 @@ int calculateSimple(char * input)
     else
     {
         printf("Error -> calculateSimple, can't end with an operator ('%c')\n", parts[(ctr-1)*16]);
-        return 0;
+        result.type = 'i';
+        result.i = 0;
+        return result;
     }
 
     ///Combine operators
@@ -341,7 +466,9 @@ int calculateSimple(char * input)
                     if(getIntFromHexChar(buf[j]) == -1)
                     {
                         printf("Error -> calculateSimple, '%c' is an invalid hex character\n", buf[j]);
-                        return 0;
+                        result.type = 'i';
+                        result.i = 0;
+                        return result;
                     }
             ///Convert hex string to integer
             intbuf = getIntFromHexStr(buf);
@@ -380,7 +507,13 @@ int calculateSimple(char * input)
     ///Check if operators are only 1 char long in parts
     for(i = 0; i < ctr; i++)
         if(charInSet(parts[i*16], "+-*/%^") && parts[i*16+1] != 0)
+        {
             printf("Error -> calculateSimple, Operator '%c' followed by '%c'\n", parts[i*16], parts[i*16+1]);
+            result.type = 'i';
+            result.i = 0;
+            return result;
+        }
+
 
     ///Check that numbers are not side by side without operator in between
     for(i = 0; i < ctr; i++)
@@ -403,7 +536,9 @@ int calculateSimple(char * input)
             }
             y = getIntFromStr(checkBuf);
             printf("Error -> calculateSimple, Missing Operator between \"%d\" and \"%d\"\n", x, y);
-            return 0;
+            result.type = 'i';
+            result.i = 0;
+            return result;
         }
 
     ///Get datatypes
@@ -425,8 +560,10 @@ int calculateSimple(char * input)
             dtypeTemp = getDtypeOfNumber(dtypeBuf);
             if(dtypeTemp == 'E')
             {
-                printf("Error -> calculateSimple, invalid Datatype in (\"%s\")!", buf);
-                return 0;
+                printf("Error -> calculateSimple, invalid Datatype in (\"%s\")!\n", buf);
+                result.type = 'i';
+                result.i = 0;
+                return result;
             }
             dtypes[i] = dtypeTemp;
         }
@@ -437,7 +574,9 @@ int calculateSimple(char * input)
         if(charInSet(dtypes[i], "+-*/%^") && charInSet(dtypes[i+1], "*/%^"))
         {
             printf("Error -> calculateSimple, operators '%c' and '%c' side by side\n", dtypes[i], dtypes[i+1]);
-            return 0;
+            result.type = 'i';
+            result.i = 0;
+            return result;
         }
 
     ///Combine +- after */%^
@@ -468,6 +607,7 @@ int calculateSimple(char * input)
     for(i = 0; i < ctr; i++)
         if(dtypes[i] == 'f')
             resultDtype = 'f';
+
 
 
     ///Calculate for int case
@@ -573,36 +713,257 @@ int calculateSimple(char * input)
         ///Check for errors
         if(ctr != 1)
         {
-            printf("Error -> calculateSimple, Error while calculating result");
-            return 0;
+            printf("Error -> calculateSimple, Error while calculating result\n");
+            result.type = 'i';
+            result.i = 0;
+            return result;
         }
         else
             intResult = intArr[0];
 
-        return intResult;
+        result.type = 'i';
+        result.i = intResult;
+        return result;
     }
 
     ///Calculate for float case
+    const int debug = 0;
     if(resultDtype == 'f')
     {
-        printf("Error -> calculateSimple, float numbers currently not supported");
-        return 0;
+        float floatResult = 0;
+
+        ///Convert to float array
+        float floatArr[ctr];
+        for(i = 0; i < ctr; i++)
+        {
+            if(dtypes[i] == 'f' || dtypes[i] == 'i')
+            {
+                ///Reset Buffer
+                char floatTempStr[16] = {0};
+                ///Copy to Buffer
+                for(j = 0; j < 16; j++)
+                {
+                    floatTempStr[j] = parts[i*16+j];
+                    if(floatTempStr[j] == 0)
+                        break;
+                }
+                ///Copy float-string to integer array
+                floatArr[i] = getFloatFromStr(floatTempStr);
+                dtypes[i] = hasDecimals(floatArr[i]) ? 'f' : 'i';
+            }
+        }
+
+        if(debug)
+        {
+            printf("After conversion:\n");
+            for(i = 0; i < ctr; i++)
+            {
+                if(dtypes[i] == 'f')
+                    printf("[%d] = %f\n", i, floatArr[i]);
+                if(dtypes[i] == 'i')
+                    printf("[%d] = %d\n", i, (int) floatArr[i]);
+                if(dtypes[i] != 'f' && dtypes[i] != 'i')
+                    printf("[%d] = %c\n", i, dtypes[i]);
+            }
+        }
+
+        ///Calculate ^
+        do
+        {
+            changed = 0;
+            for(i = 0; i < ctr-2; i++)
+            {
+
+                if(dtypes[i] == 'i' && dtypes[i+1] == '^' && dtypes[i+2] == 'i')
+                {
+                    ///Set
+                    floatArr[i] = (float) power((int)floatArr[i], (int)floatArr[i+2]);
+                    ///Shift
+                    for(j = i+1; j < ctr-2; j++)
+                    {
+                        floatArr[j] = floatArr[j+2];
+                        dtypes[j] = dtypes[j+2];
+                    }
+                    dtypes[i] = 'i';
+                    ctr -= 2;
+                    changed = 1;
+                    continue;
+                }
+                ///If f^f, then the exponent's decimal numbers will be cut per typecast to int
+                if(charInSet(dtypes[i], "if") && dtypes[i+1] == '^' && charInSet(dtypes[i+2], "if"))
+                {
+                    ///Set
+                    floatArr[i] = floatPower(floatArr[i], (int)floatArr[i+2]);
+                    ///Shift
+                    for(j = i+1; j < ctr-2; j++)
+                    {
+                        floatArr[j] = floatArr[j+2];
+                        dtypes[j] = dtypes[j+2];
+                    }
+                    dtypes[i] = hasDecimals(floatArr[i]) ? 'f' : 'i';
+                    ctr -= 2;
+                    changed = 1;
+                }
+            }
+        }
+        while(changed == 1);
+
+        if(debug)
+        {
+            printf("After ^:\n");
+            for(i = 0; i < ctr; i++)
+            {
+                if(dtypes[i] == 'f')
+                    printf("[%d] = %f\n", i, floatArr[i]);
+                if(dtypes[i] == 'i')
+                    printf("[%d] = %d\n", i, (int) floatArr[i]);
+                if(dtypes[i] != 'f' && dtypes[i] != 'i')
+                    printf("[%d] = %c\n", i, dtypes[i]);
+            }
+        }
+
+        ///Calculate */%
+        do
+        {
+            changed = 0;
+            for(i = 0; i < ctr-2; i++)
+            {
+                if(dtypes[i+1] == '%')
+                    if(dtypes[i] == 'f' || dtypes[i+2] == 'f')
+                    {
+                        printf("Error -> calculateSimple, Can't use %% operator with float numbers\n");
+                        result.type = 'i';
+                        result.i = 0;
+                        return result;
+                    }
+                    else
+                    {
+                        ///Set
+                        floatArr[i] = (int) floatArr[i] % (int) floatArr[i+2];
+                        ///Shift
+                        for(j = i+1; j < ctr-2; j++)
+                        {
+                            floatArr[j] = floatArr[j+2];
+                            dtypes[j] = dtypes[j+2];
+                        }
+                        dtypes[i] = 'i';
+                        ctr -= 2;
+                        changed = 1;
+                        continue;
+                    }
+
+                if(charInSet(dtypes[i], "if") && charInSet(dtypes[i+1], "/*") && charInSet(dtypes[i+2], "if"))
+                {
+                    ///Set
+                    if(dtypes[i+1] == '*') floatArr[i] = floatArr[i] * floatArr[i+2];
+                    if(dtypes[i+1] == '/') floatArr[i] = floatArr[i] / floatArr[i+2];
+                    ///Shift
+                    for(j = i+1; j < ctr-2; j++)
+                    {
+                        floatArr[j] = floatArr[j+2];
+                        dtypes[j] = dtypes[j+2];
+                    }
+                    dtypes[i] = hasDecimals(floatArr[i]) ? 'f' : 'i';
+                    ctr -= 2;
+                    changed = 1;
+                }
+            }
+        }
+        while(changed == 1);
+
+        if(debug)
+        {
+            printf("After */%:\n");
+            for(i = 0; i < ctr; i++)
+            {
+                if(dtypes[i] == 'f')
+                    printf("[%d] = %f\n", i, floatArr[i]);
+                if(dtypes[i] == 'i')
+                    printf("[%d] = %d\n", i, (int) floatArr[i]);
+                if(dtypes[i] != 'f' && dtypes[i] != 'i')
+                    printf("[%d] = %c\n", i, dtypes[i]);
+            }
+        }
+
+        ///Calculate +-
+        do
+        {
+            changed = 0;
+            for(i = 0; i < ctr-2; i++)
+            {
+
+                if(charInSet(dtypes[i], "if") && charInSet(dtypes[i+1], "+-") && charInSet(dtypes[i+2], "if"))
+                {
+                    ///Set
+                    if(dtypes[i+1] == '+') floatArr[i] = floatArr[i] + floatArr[i+2];
+                    if(dtypes[i+1] == '-') floatArr[i] = floatArr[i] - floatArr[i+2];
+                    ///Shift
+                    for(j = i+1; j < ctr-2; j++)
+                    {
+                        floatArr[j] = floatArr[j+2];
+                        dtypes[j] = dtypes[j+2];
+                    }
+                    dtypes[i] = hasDecimals(floatArr[i]) ? 'f' : 'i';
+                    ctr -= 2;
+                    changed = 1;
+                }
+            }
+        }
+        while(changed == 1);
+
+        if(debug)
+        {
+            printf("After +-:\n");
+            for(i = 0; i < ctr; i++)
+            {
+                if(dtypes[i] == 'f')
+                    printf("[%d] = %f\n", i, floatArr[i]);
+                if(dtypes[i] == 'i')
+                    printf("[%d] = %d\n", i, (int) floatArr[i]);
+                if(dtypes[i] != 'f' && dtypes[i] != 'i')
+                    printf("[%d] = %c\n", i, dtypes[i]);
+            }
+            printf("\n");
+        }
+
+
+        ///Check for errors
+        if(ctr != 1)
+        {
+            printf("Error -> calculateSimple, Error while calculating result\n");
+            result.type = 'i';
+            result.i = 0;
+            return result;
+        }
+        else
+            floatResult = floatArr[0];
+
+        if(hasDecimals(floatResult))
+        {
+            result.type = 'f';
+            result.f = floatResult;
+        }
+        else
+        {
+            result.type = 'i';
+            result.i = (int) floatResult;
+        }
+
+        return result;
     }
+
+    printf("Error -> Unknown Error\n");
+    result.type = 'i';
+    result.i = 0;
+    return result;
 }
 
 
 int main(void)
 {
-    while(1)
-    {
-        char input[128];
-        printf("Calculator\n\nInput:  ");
-        gets(input);
-
-        removeSpaces(input);
-        printf("Result: %d", calculateSimple(input));
-
-        getch();
-        system("cls");
-    }
+    char input[] = "8.5 ^ 2 + 3.1415 + 12";
+    
+    removeSpaces(input);
+    var_t result = calculateSimple(input);
+    var_print(&result);
 }
