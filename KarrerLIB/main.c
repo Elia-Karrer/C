@@ -1,3 +1,7 @@
+/**
+        Demo for KarrerLIB
+*/
+
 #include <stdio.h>
 #include "karrerLIB.h"
 
