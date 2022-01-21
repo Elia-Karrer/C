@@ -15,6 +15,8 @@ typedef struct NODE
     struct NODE* ptr;
 } node;
 
+typedef struct NODE* list;
+
 
 /// Creates a new list and returns address of first element
 node* list_new(unsigned int length)
@@ -35,14 +37,14 @@ node* list_new(unsigned int length)
 }
 
 
-/// Sets the value of element in list
-void list_set(node* start, unsigned int index, int val)
+/// Returns the pointer to element with wanted index
+node* list_addr_index(node* start, int index)
 {
     node* current = start -> ptr;
 
     // Exception list[0]
     if(index == 0)
-        start -> value = val;
+        return start;
 
     // Loop trough list until wanted index is found or list ends
     for(unsigned int i = 1; i < index; i++)
@@ -56,50 +58,83 @@ void list_set(node* start, unsigned int index, int val)
             break;
     }
 
-    // Set value of found list element
-    current -> value = val;
+    // Return address of last element
+    return current;
+}
+
+
+/// Return pointer to last element
+node* list_addr_end(node* start)
+{
+    node* current = start -> ptr;
+
+    // Loop trough list until list ends
+    while(current -> ptr != NULL)
+        // Move 1 element forward
+        current = current -> ptr;
+
+    // Return address of last element
+    return current;
+}
+
+
+/// Appends list b to list a
+void list_add(node* a, node* b)
+{
+    // Gets last element of list
+    node* end = list_addr_end(a);
+
+    // Links appended part to main list
+    end -> ptr = b;
+}
+
+
+/// Sets the value of element in list
+void list_set(node* start, unsigned int index, int val)
+{
+    node* elem = list_addr_index(start, index);
+    elem -> value = val;
 }
 
 
 /// Gets the value of element in list
 int list_get(node* start, unsigned int index)
 {
-    node* current = start -> ptr;
-
-    // Exception list[0]
-    if(index == 0)
-        return start -> value;
-
-    // Loop trough list until wanted index is found or list ends
-    for(unsigned int i = 1; i < index; i++)
-    {
-        // Move 1 element forward
-        current = current -> ptr;
-
-        // Avoid segmentation fault:
-        // If index is out of range, highest possible gets returned
-        if(current -> ptr == NULL)
-            break;
-    }
-
-    // Return value of found list element
-    return current -> value;
+    node* elem = list_addr_index(start, index);
+    return elem -> value;
 }
 
 
-/// EXAMPLE CODE
+/// Appends n-elements to list
+void list_append(node* start, int length)
+{
+    // Create new list to append
+    node* newlist = list_new(length);
+
+    // Check for errors while creating new list
+    if(newlist == NULL)
+        return;
+
+    // Append new list to existing list
+    list_add(start, newlist);
+}
+
+
+
+/// Example code
 int main(void)
 {
-    unsigned int i;
+    // Create new list with 10 elements
+    list x = list_new(10);
 
-    // Create list
-    node* list = list_new(8);
+    // Append 90 elements to the list
+    list_append(x, 90);
 
-    // Set every element in list to index number
-    for(i = 0; i < 8; i++)
-        list_set(list, i, i);
+    // Enumerate list values with "index"
+    for(int i = 0; i < 100; i++)
+        list_set(x, i, i);
 
-    // Output list with overflow
-    for(i = 0; i < 10; i++)
-        printf("list[%d] = %d\n", i, list_get(list, i));
+    // Output every element of list with overflow
+    for(int i = 0; i < 110; i++)
+        printf("x[%d] = %d\n", i, list_get(x, i));
 }
