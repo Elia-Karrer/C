@@ -120,6 +120,35 @@ void list_append(node* start, int length)
 }
 
 
+/// Removes specific element from list
+void list_remove(node* start, unsigned int index)
+{
+    // Exception list[0]
+    if(index == 0)
+    {
+        // Shift start
+        start = start -> ptr;
+        return;
+    }
+
+    // Exception list[max]
+    if(list_addr_index(start, index) -> ptr == NULL)
+    {
+        // End list 1 before
+        node* temp = list_addr_index(start, index-1);
+        temp -> ptr = NULL;
+        return;
+    }
+
+    // Get addresses
+    node* element_before_rem = list_addr_index(start, index-1);
+    node* element_after_rem = list_addr_index(start, index+1);
+
+    // Set
+    element_before_rem -> ptr = element_after_rem;
+}
+
+
 
 /// Example code
 int main(void)
@@ -133,6 +162,9 @@ int main(void)
     // Enumerate list values with "index"
     for(int i = 0; i < 100; i++)
         list_set(x, i, i);
+
+    // Removes last element
+    list_remove(x, 99);
 
     // Output every element of list with overflow
     for(int i = 0; i < 110; i++)
