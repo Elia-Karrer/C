@@ -21,17 +21,21 @@ typedef struct NODE* list;
 /// Creates a new list and returns address of first element
 node* list_new(unsigned int length)
 {
+    node* list;
+    unsigned int i;
+        
     // Allocate memory for list
-    node* list = (node*) malloc(length * sizeof(node));
+    list = (node*) malloc(length * sizeof(node));
 
     // Error check
     if(list == NULL)
         return NULL;
 
     // Link list elements
-    for(unsigned int i = 0; i < length; i++)
-        list[i].ptr = (i == length-1) ? NULL : &list[i+1];
-
+    for(i = 0; i < length-1; i++)
+        list[i].ptr =  &list[i+1];
+    list[length-1].ptr = NULL;
+    
     // Return first list element
     return list;
 }
