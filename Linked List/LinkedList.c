@@ -130,7 +130,7 @@ void list_remove(node* start, unsigned int index)
     // Exception list[0]
     if(index == 0)
     {
-        // Shift start
+        // Change start
         start = start -> ptr;
         return;
     }
